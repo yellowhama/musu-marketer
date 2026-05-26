@@ -9,36 +9,36 @@ If you need to push campaigns to your own proprietary CMS, CRM, or a custom Slac
 
 ### Step-by-step:
 1. Create a new file in `internal/publisher/your_adapter.go`.
-2. Implement the `Publisher` interface:
-```go
-type MyAdapter struct {}
-func (a *MyAdapter) Publish(topic, content string) (string, error) {
-    // Your custom logic here (API calls, file saving, etc.)
-    return "Success URL/ID", nil
-}
-```
-3. Register it in an `init()` function:
-```go
-func init() {
-    Register("my-custom-key", &MyAdapter{})
-}
-```
-4. Rebuild the project. You can now use `.\musu-marketer.exe publish [ID] --platform my-custom-key`.
+2. Implement the `Publisher` interface.
+3. Register it in an `init()` function using `publisher.Register()`.
+4. Rebuild the project. You can now use `.\musu-marketer.exe publish [ID] --platform your-key`.
 
 ---
 
-## 2. Remote Control via REST API
-Start the server to allow your web app to trigger marketing tasks:
+## 2. Remote Control via REST API (v1.2.1)
+Start the server to allow your application to trigger marketing tasks remotely:
 ```bash
 ./musu-marketer serve --port 8081
 ```
 
-### Endpoints (v1):
-- `GET /health`: Check if the engine is running.
-- `POST /api/v1/draft`: (WIP) Trigger a strategy analysis and campaign draft.
-- `GET /api/v1/campaigns`: (WIP) List stored drafts.
+### Endpoints:
+#### `GET /health`
+Returns the status of the engine.
+```json
+{"status": "alive"}
+```
+
+#### `POST /api/v1/draft` (Work in Progress)
+Trigger the Strategist and Copywriter pipeline for a specific topic.
+
+#### `GET /api/v1/campaigns` (Work in Progress)
+List the drafted and published campaigns from the SQLite database.
 
 ---
 
-## 3. Embedding the Engine
-Because `musu-marketer` is written in Go, you can import its internal packages (`agent`, `bridge`, `db`) directly into your own Go projects for maximum performance.
+## 3. Embedding the Engine (Go Developers)
+`musu-marketer` is highly modular. You can import its internal packages directly into your Go backend:
+
+- `internal/agent`: Invoke the Strategist or Copywriter agents programmatically.
+- `internal/db`: Access the persistent campaign storage.
+- `internal/bridge`: Scan and ingest knowledge from any directory.
