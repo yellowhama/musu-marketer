@@ -24,14 +24,19 @@ var autopilotCmd = &cobra.Command{
 		dbPath := filepath.Join("projects", project, "data", "marketer.db")
 		model, _ := cmd.Flags().GetString("model")
 		
+		// Decoupled: Read crawl path from config, default to relative path
+		crawlPath := viper.GetString("crawl_path")
+		if crawlPath == "" {
+			crawlPath = "../musu-crawl-ai/musu-crawl.exe"
+		}
+
 		crawlProject := "autopilot-" + project
 
 		fmt.Printf("🚀 Starting Autopilot for topic '%s' in project '%s'\n", topic, project)
+		fmt.Printf("[DEBUG] Using crawl binary: %s\n", crawlPath)
 
 		// 1. Spot Trend and Trigger Research
 		fmt.Println("🔍 Step 1: Spotting trends and starting research...")
-		
-		crawlPath := "C:\\Users\\empty\\musu-crawl-ai\\musu-crawl.exe"
 		spotArgs := []string{"spot", topic, "--limit", "1", "--research", "--project", crawlProject}
 		
 		spotCmd := exec.Command(crawlPath, spotArgs...)
@@ -71,7 +76,6 @@ var autopilotCmd = &cobra.Command{
 
 		// 3. Draft Campaigns
 		fmt.Println("\n✍️  Step 3: Drafting campaigns for personas...")
-		// We'll try to find available personas for the project
 		personaDir := filepath.Join("projects", project, "personas")
 		files, _ := os.ReadDir(personaDir)
 		

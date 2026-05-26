@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"time"
 )
 
 type Strategist struct {
-	OllamaURL string
-	Model     string
+	OllamaURL  string
+	Model      string
+	httpClient *http.Client // Optimized: Reusable client pool
 }
 
 type MarketingBrief struct {
@@ -17,17 +20,31 @@ type MarketingBrief struct {
 	Target    string   `json:"target_segment"`
 	Triggers  []string `json:"triggers"`
 	Goal      string   `json:"primary_goal"`
-	Framework string   `json:"selected_framework"` // New: Guided by Bible
+	Framework string   `json:"selected_framework"`
 }
 
 func NewStrategist(url, model string) *Strategist {
 	if url == "" { url = "http://localhost:11434/api/generate" }
 	if model == "" { model = "llama3" }
-	return &Strategist{OllamaURL: url, Model: model}
+	return &Strategist{
+		OllamaURL: url,
+		Model:     model,
+		httpClient: &http.Client{
+			Timeout: 60 * time.Second,
+			Transport: &http.Transport{
+				MaxIdleConns:        50,
+				IdleConnTimeout:     90 * time.Second,
+				MaxIdleConnsPerHost: 10,
+			},
+		},
+	}
 }
 
 func (s *Strategist) CreateBrief(context string) (*MarketingBrief, error) {
-	bible := LoadMarketingBible()
+	bible, err := LoadMarketingBible()
+	if err != nil {
+		return nil, fmt.Errorf("critical: strategy cannot proceed without marketing bible: %v", err)
+	}
 	
 	prompt := fmt.Sprintf(`### MARKETING MASTERY BIBLE ###
 %s
@@ -60,9 +77,14 @@ Output in strict JSON format:
 	}
 
 	jsonData, _ := json.Marshal(reqBody)
-	resp, err := http.Post(s.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
+	resp, err := s.httpClient.Post(s.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil { return nil, err }
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("ollama strategist error %d: %s", resp.StatusCode, string(body))
+	}
 
 	var result struct {
 		Response string `json:"response"`
