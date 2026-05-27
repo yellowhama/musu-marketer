@@ -1,12 +1,11 @@
 package cmd
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -24,7 +23,7 @@ var autopilotCmd = &cobra.Command{
 		dbPath := filepath.Join("projects", project, "data", "marketer.db")
 		model, _ := cmd.Flags().GetString("model")
 		
-		// Decoupled: Read crawl path from config, default to relative path
+		// Decoupled: Read crawl path from config
 		crawlPath := viper.GetString("crawl_path")
 		if crawlPath == "" {
 			crawlPath = "../musu-crawl-ai/musu-crawl.exe"
@@ -33,35 +32,36 @@ var autopilotCmd = &cobra.Command{
 		crawlProject := "autopilot-" + project
 
 		fmt.Printf("🚀 Starting Autopilot for topic '%s' in project '%s'\n", topic, project)
-		fmt.Printf("[DEBUG] Using crawl binary: %s\n", crawlPath)
 
-		// 1. Spot Trend and Trigger Research
-		fmt.Println("🔍 Step 1: Spotting trends and starting research...")
-		spotArgs := []string{"spot", topic, "--limit", "1", "--research", "--project", crawlProject}
-		
+		// 1. Spot Trend via the JSON contract (robust)
+		fmt.Println("🔍 Step 1: Spotting trends...")
+		spotArgs := []string{"spot", topic, "--limit", "1", "--json"}
+
 		spotCmd := exec.Command(crawlPath, spotArgs...)
-		stdout, _ := spotCmd.StdoutPipe()
-		spotCmd.Start()
-
-		scanner := bufio.NewScanner(stdout)
-		var topTrendTitle string
-		for scanner.Scan() {
-			line := scanner.Text()
-			fmt.Println("   [CRAWL]", line)
-			if strings.Contains(line, "Auto-triggering research for top trend:") {
-				re := regexp.MustCompile(`"([^"]+)"`)
-				match := re.FindStringSubmatch(line)
-				if len(match) > 1 {
-					topTrendTitle = match[1]
-				}
-			}
-		}
-		spotCmd.Wait()
-
-		if topTrendTitle == "" {
-			fmt.Println("❌ Could not identify a top trend to research.")
+		out, err := spotCmd.Output()
+		if err != nil {
+			fmt.Printf("❌ Spot command execution failed: %v\n", err)
 			return
 		}
+
+		var spotResp struct {
+			Status string `json:"status"`
+			Data   []struct {
+				Title string `json:"title"`
+				URL   string `json:"url"`
+				Score int    `json:"score"`
+			} `json:"data"`
+		}
+		if err := json.Unmarshal(out, &spotResp); err != nil {
+			fmt.Printf("❌ Could not parse spot JSON output: %v\n", err)
+			return
+		}
+		if spotResp.Status != "success" || len(spotResp.Data) == 0 {
+			fmt.Println("❌ No trends found or mission aborted by crawler.")
+			return
+		}
+		topTrendTitle := spotResp.Data[0].Title
+		fmt.Printf("   🔥 Top trend spotted: %q (Score: %d)\n", topTrendTitle, spotResp.Data[0].Score)
 
 		// 2. Deep researching
 		fmt.Printf("\n🧠 Step 2: Deep researching top trend: %q\n", topTrendTitle)

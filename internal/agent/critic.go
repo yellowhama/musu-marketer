@@ -87,10 +87,15 @@ Output in strict JSON format:
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil { return nil, err }
 
+	return parseCriticEvaluation(result.Response)
+}
+
+// parseCriticEvaluation decodes the raw model response into a CriticEvaluation.
+// Extracted so the parsing contract can be unit-tested without a live Ollama call.
+func parseCriticEvaluation(response string) (*CriticEvaluation, error) {
 	var eval CriticEvaluation
-	if err := json.Unmarshal([]byte(result.Response), &eval); err != nil {
+	if err := json.Unmarshal([]byte(response), &eval); err != nil {
 		return nil, fmt.Errorf("failed to parse critic evaluation JSON: %v", err)
 	}
-
 	return &eval, nil
 }

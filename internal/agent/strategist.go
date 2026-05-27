@@ -45,17 +45,28 @@ func (s *Strategist) CreateBrief(context string, history string) (*MarketingBrie
 	if err != nil {
 		return nil, fmt.Errorf("critical: strategy cannot proceed without marketing bible: %v", err)
 	}
-	
-	historySection := ""
-	if history != "" {
-		historySection = fmt.Sprintf("\n### PREVIOUS SUCCESSFUL CAMPAIGNS ###\n%s\n\nEnsure this new strategy builds upon the above history and does not repeat the exact same angles.", history)
-	}
 
-	prompt := fmt.Sprintf(`### MARKETING MASTERY BIBLE ###
+	var lastError error
+	var currentFeedback string
+
+	// ⚡ Agentic Self-Correction Loop (Max 3 retries)
+	for attempt := 1; attempt <= 3; attempt++ {
+		historySection := ""
+		if history != "" {
+			historySection = fmt.Sprintf("\n### PREVIOUS SUCCESSFUL CAMPAIGNS ###\n%s\n\nEnsure this new strategy builds upon the above history and does not repeat the exact same angles.", history)
+		}
+		
+		feedbackSection := ""
+		if currentFeedback != "" {
+			feedbackSection = fmt.Sprintf("\n\n### PREVIOUS ERROR ###\nYour last response was invalid JSON: %s. Please fix the structure and try again.", currentFeedback)
+		}
+
+		prompt := fmt.Sprintf(`### MARKETING MASTERY BIBLE ###
 %s
 
 ### MISSION ###
 You are a Senior Marketing Strategist. Analyze the technical context and select the best professional strategy from the Bible.
+%s
 %s
 
 Context:
@@ -73,34 +84,48 @@ Output in strict JSON format:
   "triggers": ["...", "..."],
   "primary_goal": "...",
   "selected_framework": "AIDA | PAS | BAB"
-}`, bible, historySection, context)
+}`, bible, historySection, feedbackSection, context)
 
-	reqBody := map[string]interface{}{
-		"model":  s.Model,
-		"prompt": prompt,
-		"stream": false,
-		"format": "json",
+		reqBody := map[string]interface{}{
+			"model":  s.Model,
+			"prompt": prompt,
+			"stream": false,
+			"format": "json",
+		}
+
+		jsonData, _ := json.Marshal(reqBody)
+		resp, err := s.httpClient.Post(s.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			lastError = err
+			continue
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			body, _ := io.ReadAll(resp.Body)
+			lastError = fmt.Errorf("ollama strategist error %d: %s", resp.StatusCode, string(body))
+			continue
+		}
+
+		var result struct {
+			Response string `json:"response"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			currentFeedback = err.Error()
+			lastError = err
+			continue
+		}
+
+		var brief MarketingBrief
+		if err := json.Unmarshal([]byte(result.Response), &brief); err != nil {
+			currentFeedback = err.Error()
+			lastError = err
+			continue
+		}
+
+		// Success!
+		return &brief, nil
 	}
 
-	jsonData, _ := json.Marshal(reqBody)
-	resp, err := s.httpClient.Post(s.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil { return nil, err }
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("ollama strategist error %d: %s", resp.StatusCode, string(body))
-	}
-
-	var result struct {
-		Response string `json:"response"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil { return nil, err }
-
-	var brief MarketingBrief
-	if err := json.Unmarshal([]byte(result.Response), &brief); err != nil {
-		return nil, fmt.Errorf("failed to parse brief JSON: %v", err)
-	}
-
-	return &brief, nil
+	return nil, fmt.Errorf("strategist failed after 3 attempts: %v", lastError)
 }
