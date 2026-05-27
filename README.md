@@ -1,8 +1,20 @@
 # musu-marketer
 
-> **The High-Impact AI Strategic Marketing Agency.**
+> Grounded campaign drafting from a verified local wiki.
 
-`musu-marketer` is a professional-grade, autonomous marketing engine built in Go. It is the "Voice" of the Musu ecosystem, consuming verified knowledge from `musu-crawl-ai` and transforming it into strategic, viral content using a collaborative **Strategic Crew**.
+`musu-marketer` is the strategy and writing layer of the Musu stack. It consumes grounded source material from `musu-crawl-ai`, turns it into campaign briefs and finished copy, and keeps the whole flow deterministic enough for CLI automation, CI smoke tests, and agent handoff.
+
+## What It Is
+
+- A Go CLI for drafting marketing campaigns from a grounded wiki
+- Persona-aware copy generation with a copywriter/critic loop
+- A project-local campaign database with machine-readable output and preflight checks
+
+## Best For
+
+- product launch messaging
+- newsletter and blog campaign drafting
+- grounded marketing copy where source material matters more than vibes
 
 ---
 
@@ -37,6 +49,11 @@
 ./musu-marketer doctor --project master-brand
 ./musu-marketer draft "QuantumComputing" --persona tech-analyst
 ```
+
+Core flow:
+1. bootstrap a project
+2. verify wiki + AI readiness
+3. draft against verified source material
 
 ---
 
