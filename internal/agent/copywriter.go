@@ -1,43 +1,25 @@
 package agent
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 type Copywriter struct {
-	OllamaURL      string
-	Model          string
+	Client         *AgentClient
 	ActivePersona  string
 	PersonaContent string
 	ProjectPath    string
-	httpClient     *http.Client // Optimized: Reusable client pool
 }
 
 func NewCopywriter(url, model, personaName, projectPath string) *Copywriter {
-	if url == "" { url = "http://localhost:11434/api/generate" }
-	if model == "" { model = "llama3" }
-	
 	c := &Copywriter{
-		OllamaURL:     url, 
-		Model:         model, 
-		ActivePersona: personaName, 
+		Client:        NewAgentClient(url, model),
+		ActivePersona: personaName,
 		ProjectPath:   projectPath,
-		httpClient: &http.Client{
-			Timeout: 120 * time.Second, // Drafting takes longer
-			Transport: &http.Transport{
-				MaxIdleConns:        50,
-				IdleConnTimeout:     90 * time.Second,
-				MaxIdleConnsPerHost: 10,
-			},
-		},
 	}
 	c.loadPersona(personaName)
 	return c
@@ -96,32 +78,12 @@ Requirements:
 - Output a high-impact Twitter Thread (5-7 posts).
 - Output a professional Blog Post / LinkedIn Article.`, bible, c.PersonaContent, string(briefJSON), feedbackSection, brief.Framework, context)
 
-	reqBody := map[string]interface{}{
-		"model":  c.Model,
-		"prompt": systemPrompt,
-		"stream": false,
-	}
-
-	jsonData, _ := json.Marshal(reqBody)
-	resp, err := c.httpClient.Post(c.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
+	response, err := c.Client.Ask(systemPrompt, false)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("ollama copywriter error %d: %s", resp.StatusCode, string(body))
-	}
-
-	var result struct {
-		Response string `json:"response"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", fmt.Errorf("failed to decode copywriter response: %v", err)
-	}
-
-	return validateDraft(result.Response)
+	return validateDraft(response)
 }
 
 // validateDraft guards the marquee draft path against silently succeeding with

@@ -1,18 +1,12 @@
 package agent
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
 )
 
 type Critic struct {
-	OllamaURL  string
-	Model      string
-	httpClient *http.Client
+	Client *AgentClient
 }
 
 type CriticEvaluation struct {
@@ -21,18 +15,8 @@ type CriticEvaluation struct {
 }
 
 func NewCritic(url, model string) *Critic {
-	if url == "" { url = "http://localhost:11434/api/generate" }
-	if model == "" { model = "llama3" }
 	return &Critic{
-		OllamaURL: url,
-		Model:     model,
-		httpClient: &http.Client{
-			Timeout: 60 * time.Second,
-			Transport: &http.Transport{
-				MaxIdleConns:    10,
-				IdleConnTimeout: 90 * time.Second,
-			},
-		},
+		Client: NewAgentClient(url, model),
 	}
 }
 
@@ -65,33 +49,13 @@ Output in strict JSON format:
   "feedback": "Detailed explanation of flaws or suggestions for improvement"
 }`, string(briefJSON), personaContent, draft, brief.Framework, brief.Triggers)
 
-	reqBody := map[string]interface{}{
-		"model":  c.Model,
-		"prompt": prompt,
-		"stream": false,
-		"format": "json",
-	}
-
-	jsonData, _ := json.Marshal(reqBody)
-	resp, err := c.httpClient.Post(c.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
+	response, err := c.Client.Ask(prompt, true)
 	if err != nil { return nil, err }
-	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("ollama critic error %d: %s", resp.StatusCode, string(body))
-	}
-
-	var result struct {
-		Response string `json:"response"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil { return nil, err }
-
-	return parseCriticEvaluation(result.Response)
+	return parseCriticEvaluation(response)
 }
 
 // parseCriticEvaluation decodes the raw model response into a CriticEvaluation.
-// Extracted so the parsing contract can be unit-tested without a live Ollama call.
 func parseCriticEvaluation(response string) (*CriticEvaluation, error) {
 	var eval CriticEvaluation
 	if err := json.Unmarshal([]byte(response), &eval); err != nil {

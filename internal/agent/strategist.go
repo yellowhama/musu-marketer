@@ -1,18 +1,12 @@
 package agent
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"time"
 )
 
 type Strategist struct {
-	OllamaURL  string
-	Model      string
-	httpClient *http.Client // Optimized: Reusable client pool
+	Client *AgentClient
 }
 
 type MarketingBrief struct {
@@ -24,19 +18,8 @@ type MarketingBrief struct {
 }
 
 func NewStrategist(url, model string) *Strategist {
-	if url == "" { url = "http://localhost:11434/api/generate" }
-	if model == "" { model = "llama3" }
 	return &Strategist{
-		OllamaURL: url,
-		Model:     model,
-		httpClient: &http.Client{
-			Timeout: 60 * time.Second,
-			Transport: &http.Transport{
-				MaxIdleConns:        50,
-				IdleConnTimeout:     90 * time.Second,
-				MaxIdleConnsPerHost: 10,
-			},
-		},
+		Client: NewAgentClient(url, model),
 	}
 }
 
@@ -86,38 +69,14 @@ Output in strict JSON format:
   "selected_framework": "AIDA | PAS | BAB"
 }`, bible, historySection, feedbackSection, context)
 
-		reqBody := map[string]interface{}{
-			"model":  s.Model,
-			"prompt": prompt,
-			"stream": false,
-			"format": "json",
-		}
-
-		jsonData, _ := json.Marshal(reqBody)
-		resp, err := s.httpClient.Post(s.OllamaURL, "application/json", bytes.NewBuffer(jsonData))
+		response, err := s.Client.Ask(prompt, true)
 		if err != nil {
-			lastError = err
-			continue
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != 200 {
-			body, _ := io.ReadAll(resp.Body)
-			lastError = fmt.Errorf("ollama strategist error %d: %s", resp.StatusCode, string(body))
-			continue
-		}
-
-		var result struct {
-			Response string `json:"response"`
-		}
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			currentFeedback = err.Error()
 			lastError = err
 			continue
 		}
 
 		var brief MarketingBrief
-		if err := json.Unmarshal([]byte(result.Response), &brief); err != nil {
+		if err := json.Unmarshal([]byte(response), &brief); err != nil {
 			currentFeedback = err.Error()
 			lastError = err
 			continue

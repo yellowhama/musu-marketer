@@ -23,6 +23,9 @@ var autopilotCmd = &cobra.Command{
 		dbPath := filepath.Join("projects", project, "data", "marketer.db")
 		model, _ := cmd.Flags().GetString("model")
 		
+		aiProvider := viper.GetString("ai_provider")
+		aiURL := viper.GetString("ai_url")
+
 		// Decoupled: Read crawl path from config
 		crawlPath := viper.GetString("crawl_path")
 		if crawlPath == "" {
@@ -35,7 +38,14 @@ var autopilotCmd = &cobra.Command{
 
 		// 1. Spot Trend via the JSON contract (robust)
 		fmt.Println("🔍 Step 1: Spotting trends...")
-		spotArgs := []string{"spot", topic, "--limit", "1", "--json"}
+		spotArgs := []string{
+			"spot", topic, 
+			"--limit", "1", 
+			"--json", 
+			"--model", model, 
+			"--ai-provider", aiProvider, 
+			"--ai-url", aiURL,
+		}
 
 		spotCmd := exec.Command(crawlPath, spotArgs...)
 		out, err := spotCmd.Output()
@@ -65,7 +75,14 @@ var autopilotCmd = &cobra.Command{
 
 		// 2. Deep researching
 		fmt.Printf("\n🧠 Step 2: Deep researching top trend: %q\n", topTrendTitle)
-		researchArgs := []string{"research", topTrendTitle, "--project", crawlProject, "--depth", "2"}
+		researchArgs := []string{
+			"research", topTrendTitle, 
+			"--project", crawlProject, 
+			"--depth", "2",
+			"--model", model, 
+			"--ai-provider", aiProvider, 
+			"--ai-url", aiURL,
+		}
 		researchCmd := exec.Command(crawlPath, researchArgs...)
 		researchCmd.Stdout = os.Stdout
 		researchCmd.Stderr = os.Stderr

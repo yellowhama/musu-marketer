@@ -59,7 +59,8 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 		}
 	}
 
-	strategist := agent.NewStrategist("", model)
+	aiURL := viper.GetString("ai_url")
+	strategist := agent.NewStrategist(aiURL, model)
 	brief, err := strategist.CreateBrief(context.String(), history.String())
 	if err != nil {
 		fmt.Printf("   ⚠️  Strategy phase failed: %v. Using default approach.\n", err)
@@ -71,8 +72,8 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 	// 2. Collaborative Drafting Loop (Copywriter + Critic)
 	fmt.Println("✍️  Phase 2: Collaborative Drafting Loop starting...")
 	projectPath := filepath.Join("projects", project)
-	copywriter := agent.NewCopywriter("", model, persona, projectPath)
-	critic := agent.NewCritic("", model)
+	copywriter := agent.NewCopywriter(aiURL, model, persona, projectPath)
+	critic := agent.NewCritic(aiURL, model)
 	
 	var finalCampaign string
 	var currentFeedback string

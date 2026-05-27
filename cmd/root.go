@@ -41,9 +41,13 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().String("wiki", "C:\\Users\\empty\\musu-crawl-ai\\wiki", "Path to musu-crawl-ai wiki")
 	rootCmd.PersistentFlags().StringP("project", "p", "default", "Project name to scope the assets")
+	rootCmd.PersistentFlags().String("ai-provider", "ollama", "AI provider (ollama, sglang, openai)")
+	rootCmd.PersistentFlags().String("ai-url", "http://localhost:11434/v1", "AI base URL")
 	
 	viper.BindPFlag("wiki_dir", rootCmd.PersistentFlags().Lookup("wiki"))
 	viper.BindPFlag("project", rootCmd.PersistentFlags().Lookup("project"))
+	viper.BindPFlag("ai_provider", rootCmd.PersistentFlags().Lookup("ai-provider"))
+	viper.BindPFlag("ai_url", rootCmd.PersistentFlags().Lookup("ai-url"))
 }
 
 func initConfig() {
