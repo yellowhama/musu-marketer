@@ -33,6 +33,7 @@
 ### 2. Quick Start
 ```bash
 ./musu-marketer init --project master-brand
+./musu-marketer doctor --project master-brand
 ./musu-marketer draft "QuantumComputing" --persona tech-analyst
 ```
 
@@ -45,6 +46,19 @@ Generate content using a self-correcting loop:
 ```bash
 ./musu-marketer draft [topic] --persona [name] --project [project]
 ```
+
+### 0. Preflight
+Verify that your crawl wiki and AI endpoint are reachable before drafting:
+```bash
+./musu-marketer doctor --project [project]
+./musu-marketer doctor --project [project] --json
+./musu-marketer doctor --project [project] --fix
+./musu-marketer doctor --project [project] --topic "your-topic"
+```
+
+`musu-marketer` now auto-discovers a sibling `../musu-crawl-ai/wiki` when `--wiki` is omitted. Override it with `--wiki`, `MUSU_MARKETER_WIKI`, or `MUSU_WIKI` when needed.
+When safe, `doctor --fix` will scaffold the missing local project directory/database/config for you.
+If you pass `--topic`, `doctor` checks whether the current wiki contains enough matching source material to draft that topic by reading `index.json` metadata and Markdown body content, not just filenames.
 
 ### 2. Autopilot (Zero-Click)
 Spot trends via `crawl-ai`, research them, and draft campaigns automatically:
@@ -68,4 +82,4 @@ All campaign data and project-specific personas are stored in the `projects/` di
 
 ## 🔗 The Ecosystem
 - **musu-crawl-ai:** The "Brain" providing verified knowledge.
-- **musu-nurikun:** The "Hand" managing digital identities and actions.
+- **musu-nurikun:** The "Hand" handling inbox triage and compliant opt-in email operations.

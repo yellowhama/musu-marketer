@@ -1,38 +1,45 @@
-# Master Plan: Musu Intelligence Ecosystem (STATUS: V2.2.0 TELEMETRY READY)
+# musu-marketer Spec (STATUS: v2.0.1 PRELIGHTENED)
 
-## 🎯 Project Goal
-Build an autonomous, self-improving agent ecosystem. Phase 16 introduces **Recursive Self-Improvement (RSI)** by enabling agents to learn from their own execution history.
+## Goal
+`musu-marketer` is the "Voice" of the Musu ecosystem. It turns grounded wiki knowledge from `musu-crawl-ai` into campaign drafts, persona-shaped copy, and publishable marketing assets.
 
-## ✅ Completed Milestones
+## Current Product Truth
 
-### Phase 1-15: Infrastructure & Hardening
-- [x] **Universal AI Gateway:** Engine-agnostic OpenAI API standard integration.
-- [x] **RTX 5070 Ti Optimization:** SGLang-ready architecture.
-- [x] **Stealth & Identity:** Real email, human-like movement, and forged souls.
+### Drafting Surface
+- `draft [topic]` creates a strategic brief and marketing copy from the current project context.
+- `autopilot [topic]` is a higher-level orchestration path that assumes research material already exists or can be prepared in the wider Musu workflow.
+- `persona` manages local tone/identity files under `projects/<project>/personas`.
 
-### Phase 16: The Recursive Loop (Task 16.1 DONE)
-- [x] **Unified Telemetry System:** Every agent reasoning trace is now recorded as a JSON "Wide Event."
-- [x] **Central Experience Bank:** All logs consolidate into `wiki/telemetry/` for cross-project auditing.
-- [x] **Legibility Milestone:** Achieved "100% Observability" for AI-to-AI reasoning loops.
+### Preflight / Recovery
+- `doctor` verifies the wiki path, project directory, SQLite DB, AI endpoint, and optional topic readiness.
+- `doctor --fix` can safely create the local project scaffold and database.
+- `doctor --topic "..."` now uses `wiki/index.json` plus markdown body content, not just filenames.
+- `--json` produces deterministic output for agents and automation.
 
-## 🧐 Qualitative Evaluation (v2.2.0)
+### Wiki Contract
+- `--wiki` can be omitted.
+- When omitted, marketer auto-discovers a sibling `../musu-crawl-ai/wiki`, then falls back to environment overrides and local candidates.
+- Topic readiness searches titles, summaries, tags, paths, and body content.
 
-### 1. Legibility (가독성)
-- **Verdict: [PASS - EXCELLENT]**
-- The transition from flat text logs to structured `ExecutionTrace` JSONs allows any LLM to "audit" another agent's performance. This is the critical unlock for RSI.
+## Completed Milestones
+- [x] Project-scoped bootstrap with persona/database scaffold
+- [x] OpenAI-compatible AI backend configuration
+- [x] Publish adapters (`local`, `webhook`)
+- [x] JSON output mode
+- [x] Doctor command with `--fix`
+- [x] Topic readiness backed by index/body content
+- [x] Wiki auto-discovery for sibling `musu-crawl-ai`
 
-### 2. Architectural Integrity
-- **Verdict: [PASS]**
-- The same `AgentClient` telemetry logic is shared across `crawl`, `marketer`, and `nurikun`, ensuring a unified "nervous system" for the entire agency.
+## Known Constraints
+- Topic readiness is still heuristic substring matching, not ranked retrieval.
+- `doctor` is useful, but it is not a substitute for real content quality review.
+- JSON output shape is local to this CLI and not yet standardized with the other Musu tools.
 
-### 3. SGLang/Ollama Parity
-- **Verdict: [PASS]**
-- The universal client handles standard OpenAI endpoints flawlessly, ensuring high performance on 5070 Ti while maintaining local Ollama fallback.
-
-## 🚀 Future Vision (Phase 16 Next Steps)
-- **Task 16.2: The Nightly Auditor:** An agent that summarizes failure patterns from telemetry.
-- **Task 16.3: Living SOPs:** Automated patching of `MARKETING_BIBLE.md` and persona profiles.
+## Next Work
+1. Replace substring-based topic readiness with ranked or indexed retrieval.
+2. Split `doctor` into report/fix helpers before it grows into a command blob.
+3. Add a draft smoke test project that exercises the happy path against a real wiki sample.
 
 ---
 **Build Date:** 2026-05-27
-**Status:** 🧬 EVOLUTIONARY READY
+**Status:** 🗣️ VOICE READY
