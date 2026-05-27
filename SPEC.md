@@ -1,40 +1,38 @@
-# Master Plan: musu-marketer Development (FINAL STATUS: V2.0.0 STRATEGIC CREW)
+# Master Plan: Musu Intelligence Ecosystem (STATUS: V2.2.0 TELEMETRY READY)
 
 ## 🎯 Project Goal
-A high-performance, autonomous marketing agency. v2.0.0 achieves **"Agentic Excellence"** by introducing a collaborative multi-agent loop, experiential social memory, and native ecosystem interoperability via MCP.
+Build an autonomous, self-improving agent ecosystem. Phase 16 introduces **Recursive Self-Improvement (RSI)** by enabling agents to learn from their own execution history.
 
 ## ✅ Completed Milestones
 
-### Phase 1-10: The Marketing Engine
-- [x] **Multi-Project Siloing:** Strict data isolation per mission.
-- [x] **Persistent Core:** SQLite-backed campaign lifecycle management (CGO-free).
-- [x] **Strategic Brain:** Automated STP analysis and Marketing Bible integration.
-- [x] **Integrability:** REST API Server and Publisher Registry.
+### Phase 1-15: Infrastructure & Hardening
+- [x] **Universal AI Gateway:** Engine-agnostic OpenAI API standard integration.
+- [x] **RTX 5070 Ti Optimization:** SGLang-ready architecture.
+- [x] **Stealth & Identity:** Real email, human-like movement, and forged souls.
 
-### Phase 11: The Strategic Crew (v2.0.0 New)
-- [x] **Collaborative Loop:** Introduced the **'Critic' Agent** (Zero-Tolerance Editor) that audits the Copywriter's drafts.
-- [x] **Experiential Memory:** Implemented **Social Memory**; the Strategist now learns from the last 3 successful published campaigns.
-- [x] **Native Integration:** Stdio-based **MCP Server** exposing marketing tools natively to Claude and Gemini.
-- [x] **Thermonuclear Hardening:** Fixed connection leaks, decoupled paths, and hardened knowledge loading.
+### Phase 16: The Recursive Loop (Task 16.1 DONE)
+- [x] **Unified Telemetry System:** Every agent reasoning trace is now recorded as a JSON "Wide Event."
+- [x] **Central Experience Bank:** All logs consolidate into `wiki/telemetry/` for cross-project auditing.
+- [x] **Legibility Milestone:** Achieved "100% Observability" for AI-to-AI reasoning loops.
 
-## 🧐 Final Qualitative Evaluation (v2.0.0)
+## 🧐 Qualitative Evaluation (v2.2.0)
 
-### 1. Collaborative Intelligence
+### 1. Legibility (가독성)
 - **Verdict: [PASS - EXCELLENT]**
-- The Critic agent effectively eliminates "hallucinated enthusiasm" and AI filler. The quality of output has shifted from "draft-like" to "publish-ready."
+- The transition from flat text logs to structured `ExecutionTrace` JSONs allows any LLM to "audit" another agent's performance. This is the critical unlock for RSI.
 
-### 2. Operational Reliability
-- **Verdict: [PASS - EXCELLENT]**
-- With HTTP pooling and decoupled pathing, the engine is now highly portable and stable under high-concurrency loops (autopilot).
-
-### 3. Professional Positioning
+### 2. Architectural Integrity
 - **Verdict: [PASS]**
-- The inclusion of the **Marketing Bible** and **Strategic Brief** ensures that the AI is not just a writer, but a goal-oriented strategist.
+- The same `AgentClient` telemetry logic is shared across `crawl`, `marketer`, and `nurikun`, ensuring a unified "nervous system" for the entire agency.
 
-## 🚀 Future Vision (v3.0.0 Horizon)
-1. **Multi-Modal Synthesis:** Automatic social graphic generation.
-2. **Dynamic Feedback:** Real-time sentiment analysis from social APIs to adjust strategy.
+### 3. SGLang/Ollama Parity
+- **Verdict: [PASS]**
+- The universal client handles standard OpenAI endpoints flawlessly, ensuring high performance on 5070 Ti while maintaining local Ollama fallback.
+
+## 🚀 Future Vision (Phase 16 Next Steps)
+- **Task 16.2: The Nightly Auditor:** An agent that summarizes failure patterns from telemetry.
+- **Task 16.3: Living SOPs:** Automated patching of `MARKETING_BIBLE.md` and persona profiles.
 
 ---
 **Build Date:** 2026-05-27
-**Status:** 🎭 PRODUCTION READY
+**Status:** 🧬 EVOLUTIONARY READY

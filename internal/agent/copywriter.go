@@ -15,9 +15,9 @@ type Copywriter struct {
 	ProjectPath    string
 }
 
-func NewCopywriter(url, model, personaName, projectPath string) *Copywriter {
+func NewCopywriter(url, model, personaName, projectPath, wikiDir, project string) *Copywriter {
 	c := &Copywriter{
-		Client:        NewAgentClient(url, model),
+		Client:        NewAgentClient(url, model, wikiDir, project),
 		ActivePersona: personaName,
 		ProjectPath:   projectPath,
 	}

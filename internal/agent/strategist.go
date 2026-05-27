@@ -17,9 +17,9 @@ type MarketingBrief struct {
 	Framework string   `json:"selected_framework"`
 }
 
-func NewStrategist(url, model string) *Strategist {
+func NewStrategist(url, model, wikiDir, project string) *Strategist {
 	return &Strategist{
-		Client: NewAgentClient(url, model),
+		Client: NewAgentClient(url, model, wikiDir, project),
 	}
 }
 

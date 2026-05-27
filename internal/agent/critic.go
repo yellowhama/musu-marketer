@@ -14,9 +14,9 @@ type CriticEvaluation struct {
 	Feedback string `json:"feedback"`
 }
 
-func NewCritic(url, model string) *Critic {
+func NewCritic(url, model, wikiDir, project string) *Critic {
 	return &Critic{
-		Client: NewAgentClient(url, model),
+		Client: NewAgentClient(url, model, wikiDir, project),
 	}
 }
 
