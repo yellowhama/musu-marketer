@@ -5,9 +5,14 @@
 - extract doctor reporting/fixing helpers from `cmd/doctor.go`
 
 ## P2
-- standardize JSON output envelope with the other Musu CLIs
-- add a sample project + sample wiki smoke path for draft testing
+- extend the sample wiki into a richer multi-topic fixture
+- expose topic-readiness explanations more explicitly in JSON output
 
 ## P3
 - improve publish adapters beyond local/webhook
-- add topic-readiness explanations to JSON output for better agent debugging
+
+## Verified Integration Harness
+- set `MUSU_MARKETER_INTEGRATION_AI_URL`
+- optionally set `MUSU_MARKETER_INTEGRATION_MODEL` (verified locally with `llama3.2:1b`)
+- run `go test -tags integration ./cmd`
+- or run `powershell -ExecutionPolicy Bypass -File .\scripts\run-real-integration.ps1`

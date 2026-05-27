@@ -21,6 +21,7 @@
 ### 🦾 Production Hardening
 - **Resource Efficient:** Optimized HTTP connection pooling and singleton clients.
 - **Project Siloing:** Strictly isolated assets, databases, and identities per mission.
+- **Embedded Marketing Bible:** Core strategy prompts no longer depend on the shell's current working directory.
 
 ---
 
@@ -59,6 +60,16 @@ Verify that your crawl wiki and AI endpoint are reachable before drafting:
 `musu-marketer` now auto-discovers a sibling `../musu-crawl-ai/wiki` when `--wiki` is omitted. Override it with `--wiki`, `MUSU_MARKETER_WIKI`, or `MUSU_WIKI` when needed.
 When safe, `doctor --fix` will scaffold the missing local project directory/database/config for you.
 If you pass `--topic`, `doctor` checks whether the current wiki contains enough matching source material to draft that topic by reading `index.json` metadata and Markdown body content, not just filenames.
+`init --json` now returns structured bootstrap details (`project_dir`, `db_path`, `config_path`, `next_steps`) so other agents can continue setup without scraping human logs.
+For smoke checks, a tiny grounded wiki fixture now lives under `examples/sample-wiki/`.
+Like the other Musu tools, JSON mode now uses the same top-level envelope: `status`, `message`, `data`, `actionable_fix`.
+`actionable_fix` is derived from the actual failing checks, so AI-unreachable, missing-project, and topic-grounding failures produce different next steps.
+The command surface now has local smoke coverage for the real `draft` path, not just the lower-level strategist/copywriter helpers.
+For a real endpoint-backed verification, set `MUSU_MARKETER_INTEGRATION_AI_URL` and run `go test -tags integration ./cmd`, or use `scripts/run-real-integration.ps1`.
+Set `MUSU_MARKETER_INTEGRATION_MODEL` when the reachable endpoint exposes a chat model other than the default `llama3`.
+The runner auto-probes `OLLAMA_HOST`, `127.0.0.1:11434`, and `localhost:11434`, checks both `/v1/models` and Ollama `/api/tags`, and prints explicit diagnostics when no reachable endpoint exists.
+Use `-Json -ProbeOnly` when another agent or CI step needs machine-readable integration readiness output without actually running the integration-tag tests.
+The JSON doctor now emits `issue_codes` such as `ollama_host_unspecified_bind_address`, `ollama_not_installed`, `localhost_probe_timeout`, and `missing_required_model`.
 
 ### 2. Autopilot (Zero-Click)
 Spot trends via `crawl-ai`, research them, and draft campaigns automatically:

@@ -19,6 +19,13 @@ type Store struct {
 	db *sql.DB
 }
 
+func (s *Store) Close() error {
+	if s == nil || s.db == nil {
+		return nil
+	}
+	return s.db.Close()
+}
+
 func NewStore(dbPath string) (*Store, error) {
 	db, err := sql.Open("sqlite", dbPath)
 	if err != nil { return nil, err }

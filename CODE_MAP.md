@@ -11,6 +11,7 @@
 
 ## Core Packages
 - `internal/agent`: strategist, copywriter, critic, shared AI client
+- `internal/agent/skills.go`: embedded Marketing Bible loader
 - `internal/bridge`: wiki integration and topic lookup
 - `internal/db`: SQLite persistence for campaigns
 - `internal/publisher`: local and webhook publishing
@@ -21,6 +22,7 @@
 - `projects/<project>/personas`
 - `projects/<project>/data/marketer.db`
 - `projects/<project>/published`
+- `projects/<project>/NEXT_STEPS.md`
 
 ## Docs
 - `README.md`: operator quick start
@@ -31,3 +33,6 @@
 - `QUALITATIVE_REPORT.md`: current quality verdict
 - `NEXT_STEPS.md`: planned follow-up work
 - `INTEGRATION.md`: API-facing integration notes
+
+## Examples
+- `examples/sample-wiki/*`: tiny grounded wiki fixture for smoke checks

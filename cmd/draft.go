@@ -53,6 +53,7 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 	var history strings.Builder
 	store, dbErr := db.NewStore(dbPath)
 	if dbErr == nil {
+		defer store.Close()
 		past, _ := store.GetRecentPublishedCampaigns(3)
 		for _, p := range past {
 			history.WriteString(fmt.Sprintf("- Topic: %s | Brief: %s\n", p.Topic, p.Brief))
@@ -112,6 +113,9 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 	// Fixed: reuse 'store' from above or re-open correctly
 	if store == nil && dbErr != nil {
 		store, err = db.NewStore(dbPath)
+		if err == nil && store != nil {
+			defer store.Close()
+		}
 	}
 	
 	if err == nil && store != nil {

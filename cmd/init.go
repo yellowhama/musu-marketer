@@ -10,6 +10,13 @@ import (
 	"github.com/yellowhama/musu-marketer/internal/db"
 )
 
+func writeIfMissing(path string, content string) error {
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	}
+	return os.WriteFile(path, []byte(content), 0644)
+}
+
 func bootstrapProject(project string, verbose bool) (string, string, error) {
 	baseDir := filepath.Join("projects", project)
 	dirs := []string{
@@ -29,8 +36,12 @@ func bootstrapProject(project string, verbose bool) (string, string, error) {
 	}
 
 	dbPath := filepath.Join(baseDir, "data", "marketer.db")
-	if _, err := db.NewStore(dbPath); err != nil {
+	store, err := db.NewStore(dbPath)
+	if err != nil {
 		return "", "", fmt.Errorf("initialize database: %w", err)
+	}
+	if err := store.Close(); err != nil {
+		return "", "", fmt.Errorf("close database after initialization: %w", err)
 	}
 	if verbose {
 		fmt.Printf("✅ Database ready: %s\n", dbPath)
@@ -63,22 +74,61 @@ Formatting: Clean Markdown with bold headers.`
 	if verbose {
 		fmt.Printf("✅ Project configuration saved: %s\n", configPath)
 	}
+
+	nextStepsPath := filepath.Join(baseDir, "NEXT_STEPS.md")
+	nextStepsContent := fmt.Sprintf(`# Next Steps: %s
+
+1. Run `+"`musu-marketer doctor --project %s`"+` to verify wiki and AI readiness.
+2. Review or edit the persona in `+"`personas/default.md`"+`.
+3. Draft your first campaign with `+"`musu-marketer draft <topic> --project %s --persona default`"+`.
+4. Publish finished work from `+"`campaigns/`"+` through `+"`publish`"+` when ready.
+`, project, project, project)
+	if err := writeIfMissing(nextStepsPath, nextStepsContent); err != nil {
+		return "", "", fmt.Errorf("write next steps guide: %w", err)
+	}
+	if verbose {
+		fmt.Printf("✅ Next steps guide ready: %s\n", nextStepsPath)
+	}
 	return baseDir, dbPath, nil
 }
 
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize musu-marketer environment for a project",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		project := viper.GetString("project")
-		fmt.Printf("🚀 Initializing musu-marketer for project '%s' (Version %s)...\n", project, Version)
-
-		if _, _, err := bootstrapProject(project, true); err != nil {
-			fmt.Printf("❌ Failed to initialize project: %v\n", err)
-			return
+		jsonMode := viper.GetBool("json")
+		if !jsonMode {
+			fmt.Printf("🚀 Initializing musu-marketer for project '%s' (Version %s)...\n", project, Version)
 		}
 
-		fmt.Printf("\n✨ Project '%s' initialized! Run 'musu-marketer draft [topic] -p %s' to start.\n", project, project)
+		baseDir, dbPath, err := bootstrapProject(project, !jsonMode)
+		if err != nil {
+			return err
+		}
+
+		configPath := filepath.Join(baseDir, "config.yaml")
+		defaultPersonaPath := filepath.Join(baseDir, "personas", "default.md")
+		result := map[string]interface{}{
+			"project":              project,
+			"project_dir":          baseDir,
+			"db_path":              dbPath,
+			"config_path":          configPath,
+			"default_persona_path": defaultPersonaPath,
+			"project_next_steps_path": filepath.Join(baseDir, "NEXT_STEPS.md"),
+			"wiki_dir":             viper.GetString("wiki_dir"),
+			"ai_provider":          viper.GetString("ai_provider"),
+			"ai_url":               viper.GetString("ai_url"),
+			"next_steps": []string{
+				fmt.Sprintf("run 'musu-marketer doctor --project %s'", project),
+				fmt.Sprintf("run 'musu-marketer draft [topic] --project %s'", project),
+			},
+		}
+		if !jsonMode {
+			fmt.Printf("\n✨ Project '%s' initialized! Run 'musu-marketer doctor --project %s' next.\n", project, project)
+		}
+		printJSONSuccess("Project initialized", result)
+		return nil
 	},
 }
 

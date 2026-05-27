@@ -1,16 +1,13 @@
 package agent
 
 import (
-	"fmt"
-	"os"
+	_ "embed"
 )
 
-// LoadMarketingBible reads the high-resolution marketing knowledge base.
+//go:embed skills/MARKETING_BIBLE.md
+var marketingBible string
+
+// LoadMarketingBible returns the embedded high-resolution marketing knowledge base.
 func LoadMarketingBible() (string, error) {
-	path := "internal/agent/skills/MARKETING_BIBLE.md"
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return "", fmt.Errorf("marketing bible file not found at %s", path)
-	}
-	return string(data), nil
+	return marketingBible, nil
 }

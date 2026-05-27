@@ -36,6 +36,20 @@ func checkNewVersion() {
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
+		if viper.GetBool("json") {
+			if err.Error() == "doctor found blocking issues" {
+				os.Exit(1)
+			}
+			fix := ""
+			if strings.Contains(err.Error(), "arg(s)") {
+				fix = "Check 'musu-marketer [command] --help' for argument requirements."
+			}
+			if fix == "" {
+				fix = "Check 'musu-marketer [command] --help' for command usage and required flags."
+			}
+			printJSONError(err, nil, fix)
+			os.Exit(1)
+		}
 		if !viper.GetBool("json") {
 			fmt.Println(err)
 		}

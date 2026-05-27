@@ -9,12 +9,15 @@
 - `draft [topic]` creates a strategic brief and marketing copy from the current project context.
 - `autopilot [topic]` is a higher-level orchestration path that assumes research material already exists or can be prepared in the wider Musu workflow.
 - `persona` manages local tone/identity files under `projects/<project>/personas`.
+- the Marketing Bible is embedded in the binary, so draft execution does not depend on the shell's working directory.
 
 ### Preflight / Recovery
+- `init` creates the local project scaffold, default persona, config, and `NEXT_STEPS.md`.
 - `doctor` verifies the wiki path, project directory, SQLite DB, AI endpoint, and optional topic readiness.
 - `doctor --fix` can safely create the local project scaffold and database.
 - `doctor --topic "..."` now uses `wiki/index.json` plus markdown body content, not just filenames.
 - `--json` produces deterministic output for agents and automation.
+- `init --json` returns scaffold paths and recommended next commands.
 
 ### Wiki Contract
 - `--wiki` can be omitted.
@@ -29,16 +32,16 @@
 - [x] Doctor command with `--fix`
 - [x] Topic readiness backed by index/body content
 - [x] Wiki auto-discovery for sibling `musu-crawl-ai`
+- [x] Local draft smoke coverage against a grounded wiki fixture
 
 ## Known Constraints
 - Topic readiness is still heuristic substring matching, not ranked retrieval.
 - `doctor` is useful, but it is not a substitute for real content quality review.
-- JSON output shape is local to this CLI and not yet standardized with the other Musu tools.
 
 ## Next Work
 1. Replace substring-based topic readiness with ranked or indexed retrieval.
 2. Split `doctor` into report/fix helpers before it grows into a command blob.
-3. Add a draft smoke test project that exercises the happy path against a real wiki sample.
+3. Extend the smoke fixture into a richer multi-topic sample corpus.
 
 ---
 **Build Date:** 2026-05-27
