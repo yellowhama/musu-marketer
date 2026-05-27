@@ -1,61 +1,71 @@
 # musu-marketer
 
-> **The High-Impact AI Strategic Agency.**
+> **The High-Impact AI Strategic Marketing Agency.**
 
-`musu-marketer` is a professional-grade, autonomous marketing agency built in Go. It achieves **Agentic Excellence** by orchestrating a collaborative "Crew" of agents (Strategist, Copywriter, Critic) to transform verified knowledge into high-performance marketing assets.
+`musu-marketer` is a professional-grade, autonomous marketing engine built in Go. It is the "Voice" of the Musu ecosystem, consuming verified knowledge from `musu-crawl-ai` and transforming it into strategic, viral content using a collaborative **Strategic Crew**.
 
 ---
 
 ## 🚀 Key Features
 
 ### 🎭 The Strategic Crew (v2.0.0)
-- **Collaborative Loop:** Every draft undergoes a rigorous audit by a **Zero-Tolerance 'Critic' Agent** to eliminate AI fluff and maximize viral hooks.
-- **Social Memory:** The system learns from your past successes. The **Strategist** automatically references previous published history to maintain narrative consistency.
-- **Expert Bible:** Injects a professional knowledge stack (AIDA, PAS, BAB) directly into the cognitive core.
+- **Copywriter-Critic Loop:** Every draft is audited by a Zero-Tolerance Critic agent to eliminate AI fluff and maximize impact.
+- **Social Memory:** Learns from past published successes to maintain narrative consistency.
+- **Marketing Bible:** Injects 10+ years of professional marketing frameworks (AIDA, PAS, BAB) into the core logic.
 
-### 🤖 Native Agent Integration
-- **Model Context Protocol (MCP):** Stdio-based server that makes `musu-marketer` a native tool for Claude and Gemini.
-- **REST API:** Lightweight HTTP interface for integration into custom SaaS or CRM platforms.
+### 🤖 Native Integration
+- **MCP Server:** Native tool discovery for Claude and Gemini.
+- **REST API Server:** Lightweight HTTP interface for backend product integration.
+- **Interactive Builder:** Wizard-based persona creation (`persona create`).
 
-### ⚡ Automation & Isolation
-- **Autonomous Autopilot:** Full "Spot -> Research -> Draft" pipeline using `musu-crawl-ai`.
-- **Project Siloing:** Strictly isolated assets, identities, and databases for different missions or clients.
+### 🦾 Production Hardening
+- **Resource Efficient:** Optimized HTTP connection pooling and singleton clients.
+- **Project Siloing:** Strictly isolated assets, databases, and identities per mission.
 
 ---
 
 ## 🛠️ Installation & Setup
 
 ### 1. Prerequisites
-- **Knowledge:** [musu-crawl-ai](https://github.com/yellowhama/musu-crawl-ai)
-- **Intelligence:** [Ollama](https://ollama.com)
+- **Data Source:** Requires [musu-crawl-ai](https://github.com/yellowhama/musu-crawl-ai) wiki.
+- **Intelligence:** Requires [Ollama](https://ollama.com).
 
-### 2. Initialize
+### 2. Quick Start
 ```bash
 ./musu-marketer init --project master-brand
+./musu-marketer draft "QuantumComputing" --persona tech-analyst
 ```
 
 ---
 
 ## 📖 User Manual
 
-### 1. Multi-Agent Drafting
-Generate strategic content with a self-correcting review loop:
+### 1. Strategic Drafting
+Generate content using a self-correcting loop:
 ```bash
-./musu-marketer draft "DeepTech" --persona tech-analyst --project alpha
+./musu-marketer draft [topic] --persona [name] --project [project]
 ```
 
-### 2. Native Orchestration (MCP)
-Add `musu-marketer mcp` to your Claude Desktop config to use it as a native tool.
-
-### 3. Autopilot (Zero-Click)
+### 2. Autopilot (Zero-Click)
+Spot trends via `crawl-ai`, research them, and draft campaigns automatically:
 ```bash
-./musu-marketer autopilot "MachineLearning" --project auto-agency
+./musu-marketer autopilot [subreddit]
+```
+
+### 3. Campaign Management
+```bash
+./musu-marketer list
+./musu-marketer view [ID]
+./musu-marketer publish [ID] --platform local
 ```
 
 ---
 
-## 📝 Roadmap
-- [x] v1.0.0: Autonomous Drafting & Database
-- [x] v1.2.1: API Server & Connection Hardening
-- [x] v2.0.0: The Strategic Crew (Critic, Memory, MCP)
-- [ ] v3.0.0: Visual Generation & Analytics Feedback Loop
+## 📂 Architecture
+All campaign data and project-specific personas are stored in the `projects/` directory, which is excluded from Git to protect your marketing secrets.
+
+---
+
+## 🔗 The Ecosystem
+- **musu-crawl-ai:** The "Brain" providing verified knowledge.
+- **musu-nurikun:** The "Hand" managing digital identities and actions.
