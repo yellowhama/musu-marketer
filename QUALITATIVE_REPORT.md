@@ -16,6 +16,7 @@
 - the JSON diagnostics now carry stable `issue_codes` so automation can distinguish bind-address misconfiguration from missing installs or timeouts
 - the real integration path is now model-configurable through `MUSU_MARKETER_INTEGRATION_MODEL`
 - a real Ollama-backed CLI `draft` integration pass was verified with `llama3.2:1b`
+- topic lookup now ranks title/tag/summary matches ahead of weaker body-only hits
 
 ## Strong Points
 - clear project siloing
@@ -24,7 +25,7 @@
 - publish surface stays small and understandable
 
 ## Concerns
-- topic readiness is still heuristic, not ranked retrieval
+- topic readiness is now ranked lexical retrieval, but it is still not semantic/vector retrieval
 - `cmd/doctor.go` is beginning to accrete too many responsibilities
 - publish adapters are still shallow beyond local/webhook
 
@@ -32,6 +33,6 @@
 `PASS WITH CONCERNS`
 
 ## Immediate Priorities
-1. move topic readiness toward ranked/indexed retrieval
+1. decide whether topic retrieval should stay lexical or graduate to semantic/vector retrieval
 2. grow the wiki fixture into a richer multi-topic sample corpus
 3. improve publish adapters beyond local/webhook

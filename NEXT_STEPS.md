@@ -1,7 +1,7 @@
 # Next Steps: musu-marketer
 
 ## P1
-- replace heuristic topic readiness with ranked wiki retrieval
+- decide whether ranked lexical topic retrieval should stay simple or move toward semantic/vector retrieval
 - extract doctor reporting/fixing helpers from `cmd/doctor.go`
 
 ## P2

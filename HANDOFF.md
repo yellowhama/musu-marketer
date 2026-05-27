@@ -14,7 +14,7 @@
 - added `doctor`
 - added `--json`
 - added `doctor --fix`
-- changed topic readiness from filename-only to `index.json` + body-content matching
+- changed topic readiness from filename-only to ranked `index.json` + body-content matching
 - added test coverage for indexed/content topic lookup
 - `init` now writes a project-local `NEXT_STEPS.md` and returns structured bootstrap metadata in `--json`
 - embedded the Marketing Bible so draft execution stays stable outside the repo root
@@ -26,9 +26,9 @@
 4. `musu-marketer publish <id> --platform local|webhook`
 
 ## Known Constraints
-- topic readiness is heuristic substring matching, not ranked search
+- topic readiness is now weighted/ranked, but it is still not a full semantic retriever
 - `doctor` still mixes reporting and fixing in one command file
-- local smoke coverage exists, but topic retrieval is still heuristic rather than ranked
+- local smoke coverage exists, but topic retrieval still depends on lexical evidence rather than vector retrieval
 
 ## Key Files
 - `cmd/root.go`: global flags, wiki auto-discovery
