@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -116,7 +117,20 @@ Requirements:
 	var result struct {
 		Response string `json:"response"`
 	}
-	json.NewDecoder(resp.Body).Decode(&result)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return "", fmt.Errorf("failed to decode copywriter response: %v", err)
+	}
 
-	return result.Response, nil
+	return validateDraft(result.Response)
+}
+
+// validateDraft guards the marquee draft path against silently succeeding with
+// no content (e.g. Ollama returns a blank or whitespace-only completion). Without
+// this, the Critic would end up auditing an empty string and the pipeline would
+// report a "successful" but empty campaign.
+func validateDraft(draft string) (string, error) {
+	if strings.TrimSpace(draft) == "" {
+		return "", fmt.Errorf("copywriter returned an empty draft")
+	}
+	return draft, nil
 }
