@@ -56,7 +56,7 @@ func (c *Copywriter) loadPersona(name string) {
 	c.PersonaContent = string(data)
 }
 
-func (c *Copywriter) GenerateCampaign(topic string, context string, brief *MarketingBrief) (string, error) {
+func (c *Copywriter) GenerateCampaign(topic string, context string, brief *MarketingBrief, feedback string) (string, error) {
 	bible, err := LoadMarketingBible()
 	if err != nil {
 		return "", fmt.Errorf("critical: cannot draft without marketing bible: %v", err)
@@ -64,6 +64,11 @@ func (c *Copywriter) GenerateCampaign(topic string, context string, brief *Marke
 	
 	briefJSON, _ := json.MarshalIndent(brief, "", "  ")
 	
+	feedbackSection := ""
+	if feedback != "" {
+		feedbackSection = fmt.Sprintf("\n### CRITIC FEEDBACK (REWRITE REQUIRED) ###\n%s\n\nYour previous attempt was rejected. Address the feedback above strictly in this new version.", feedback)
+	}
+
 	systemPrompt := fmt.Sprintf(`### MARKETING MASTERY BIBLE ###
 %s
 
@@ -71,6 +76,7 @@ func (c *Copywriter) GenerateCampaign(topic string, context string, brief *Marke
 %s
 
 ### STRATEGIC BRIEF ###
+%s
 %s
 
 ### MISSION ###
@@ -87,7 +93,7 @@ Context:
 
 Requirements:
 - Output a high-impact Twitter Thread (5-7 posts).
-- Output a professional Blog Post / LinkedIn Article.`, bible, c.PersonaContent, string(briefJSON), brief.Framework, context)
+- Output a professional Blog Post / LinkedIn Article.`, bible, c.PersonaContent, string(briefJSON), feedbackSection, brief.Framework, context)
 
 	reqBody := map[string]interface{}{
 		"model":  c.Model,

@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const Version = "v2.0.0"
+
 var rootCmd = &cobra.Command{
 	Use:     "musu-marketer",
 	Short:   "AI Influencer & Marketing Automation Engine",

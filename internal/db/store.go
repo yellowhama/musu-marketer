@@ -82,3 +82,17 @@ func (s *Store) UpdateStatus(id int, status string) (int64, error) {
 	if err != nil { return 0, err }
 	return res.RowsAffected()
 }
+
+func (s *Store) GetRecentPublishedCampaigns(limit int) ([]Campaign, error) {
+	rows, err := s.db.Query("SELECT topic, brief FROM campaigns WHERE status = 'published' ORDER BY id DESC LIMIT ?", limit)
+	if err != nil { return nil, err }
+	defer rows.Close()
+
+	var list []Campaign
+	for rows.Next() {
+		var c Campaign
+		if err := rows.Scan(&c.Topic, &c.Brief); err != nil { continue }
+		list = append(list, c)
+	}
+	return list, nil
+}

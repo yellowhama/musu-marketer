@@ -40,17 +40,23 @@ func NewStrategist(url, model string) *Strategist {
 	}
 }
 
-func (s *Strategist) CreateBrief(context string) (*MarketingBrief, error) {
+func (s *Strategist) CreateBrief(context string, history string) (*MarketingBrief, error) {
 	bible, err := LoadMarketingBible()
 	if err != nil {
 		return nil, fmt.Errorf("critical: strategy cannot proceed without marketing bible: %v", err)
 	}
 	
+	historySection := ""
+	if history != "" {
+		historySection = fmt.Sprintf("\n### PREVIOUS SUCCESSFUL CAMPAIGNS ###\n%s\n\nEnsure this new strategy builds upon the above history and does not repeat the exact same angles.", history)
+	}
+
 	prompt := fmt.Sprintf(`### MARKETING MASTERY BIBLE ###
 %s
 
 ### MISSION ###
 You are a Senior Marketing Strategist. Analyze the technical context and select the best professional strategy from the Bible.
+%s
 
 Context:
 %s
@@ -67,7 +73,7 @@ Output in strict JSON format:
   "triggers": ["...", "..."],
   "primary_goal": "...",
   "selected_framework": "AIDA | PAS | BAB"
-}`, bible, context)
+}`, bible, historySection, context)
 
 	reqBody := map[string]interface{}{
 		"model":  s.Model,

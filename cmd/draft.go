@@ -15,7 +15,7 @@ import (
 
 var draftCmd = &cobra.Command{
 	Use:   "draft [topic]",
-	Short: "Draft a viral campaign based on verified knowledge and strategy",
+	Short: "Draft a viral campaign using the multi-agent Strategic Crew",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		topic := args[0]
@@ -39,7 +39,7 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 		return fmt.Errorf("no verified knowledge found for topic: %s", topic)
 	}
 
-	fmt.Printf("📚 Found %d knowledge sources. Starting Strategic Brain...\n", len(sources))
+	fmt.Printf("📚 Found %d knowledge sources. Starting Strategic Crew...\n", len(sources))
 	
 	var context strings.Builder
 	for _, s := range sources {
@@ -47,36 +47,80 @@ func ExecuteDraft(topic, wikiDir, dbPath, model, persona, project string) error 
 	}
 
 	// 1. Generate Strategy Brief
-	fmt.Println("🧠 Phase 1: Analyzing Market Strategy (STP & Triggers)...")
-	strategist := agent.NewStrategist("", model)
-	brief, err := strategist.CreateBrief(context.String())
-	if err != nil {
-		fmt.Printf("   ⚠️  Strategy phase failed: %v. Using default approach.\n", err)
-		brief = &agent.MarketingBrief{ValueProp: "General information", Target: "General audience"}
-	} else {
-		fmt.Printf("   🎯 [Brief] Target: %s | Goal: %s\n", brief.Target, brief.Goal)
-		fmt.Printf("   🔥 Triggers: %s\n", strings.Join(brief.Triggers, ", "))
+	fmt.Println("🧠 Phase 1: Strategist is analyzing the market...")
+	
+	// Fetch Social Memory
+	var history strings.Builder
+	store, dbErr := db.NewStore(dbPath)
+	if dbErr == nil {
+		past, _ := store.GetRecentPublishedCampaigns(3)
+		for _, p := range past {
+			history.WriteString(fmt.Sprintf("- Topic: %s | Brief: %s\n", p.Topic, p.Brief))
+		}
 	}
 
-	// 2. Generate Campaign Content
-	fmt.Printf("✍️  Phase 2: Drafting content using Persona: %s\n", persona)
+	strategist := agent.NewStrategist("", model)
+	brief, err := strategist.CreateBrief(context.String(), history.String())
+	if err != nil {
+		fmt.Printf("   ⚠️  Strategy phase failed: %v. Using default approach.\n", err)
+		brief = &agent.MarketingBrief{ValueProp: "General info", Target: "General audience", Framework: "AIDA"}
+	} else {
+		fmt.Printf("   🎯 [Brief] Target: %s | Goal: %s | Framework: %s\n", brief.Target, brief.Goal, brief.Framework)
+	}
+
+	// 2. Collaborative Drafting Loop (Copywriter + Critic)
+	fmt.Println("✍️  Phase 2: Collaborative Drafting Loop starting...")
 	projectPath := filepath.Join("projects", project)
 	copywriter := agent.NewCopywriter("", model, persona, projectPath)
-	campaign, err := copywriter.GenerateCampaign(topic, context.String(), brief)
-	if err != nil {
-		return fmt.Errorf("failed to generate campaign: %v", err)
+	critic := agent.NewCritic("", model)
+	
+	var finalCampaign string
+	var currentFeedback string
+	maxRetries := 3
+
+	for i := 1; i <= maxRetries; i++ {
+		fmt.Printf("   [Attempt %d/%d] Copywriter is drafting...\n", i, maxRetries)
+		draft, err := copywriter.GenerateCampaign(topic, context.String(), brief, currentFeedback)
+		if err != nil {
+			return fmt.Errorf("copywriter failed: %v", err)
+		}
+
+		fmt.Printf("   [Attempt %d/%d] Critic is auditing the draft...\n", i, maxRetries)
+		eval, err := critic.Evaluate(brief, copywriter.PersonaContent, draft)
+		if err != nil {
+			fmt.Printf("   ⚠️  Critic audit failed: %v. Proceeding with draft.\n", err)
+			finalCampaign = draft
+			break
+		}
+
+		if eval.Approved {
+			fmt.Println("   ✅ Critic approved the draft!")
+			finalCampaign = draft
+			break
+		}
+
+		fmt.Printf("   ❌ Critic rejected: %s\n", eval.Feedback)
+		currentFeedback = eval.Feedback
+		finalCampaign = draft // Store as fallback
+		if i == maxRetries {
+			fmt.Println("   ⚠️  Maximum retries reached. Using the last iteration.")
+		}
 	}
 
 	// 3. Save to Database
-	store, err := db.NewStore(dbPath)
-	if err == nil {
+	// Fixed: reuse 'store' from above or re-open correctly
+	if store == nil && dbErr != nil {
+		store, err = db.NewStore(dbPath)
+	}
+	
+	if err == nil && store != nil {
 		briefJSON, _ := json.Marshal(brief)
-		id, _ := store.SaveCampaign(topic, campaign, string(briefJSON), persona)
+		id, _ := store.SaveCampaign(topic, finalCampaign, string(briefJSON), persona)
 		fmt.Printf("\n✅ Strategic Campaign saved to database (ID: %d)\n", id)
 	}
 
-	fmt.Println("\n🏁 --- GENERATED STRATEGIC CAMPAIGN --- 🏁")
-	fmt.Println(campaign)
+	fmt.Println("\n🏁 --- FINAL STRATEGIC CAMPAIGN --- 🏁")
+	fmt.Println(finalCampaign)
 	return nil
 }
 

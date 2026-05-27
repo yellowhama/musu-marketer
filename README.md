@@ -1,82 +1,61 @@
 # musu-marketer
 
-> **The High-Impact AI Speaker & Marketing Engine.**
+> **The High-Impact AI Strategic Agency.**
 
-`musu-marketer` is a professional-grade, autonomous marketing engine built in Go. It consumes verified knowledge (harvested by [musu-crawl-ai](https://github.com/yellowhama/musu-crawl-ai)) and transforms it into strategic, viral content across multiple platforms using a specialized **Marketing Strategic Brain**.
+`musu-marketer` is a professional-grade, autonomous marketing agency built in Go. It achieves **Agentic Excellence** by orchestrating a collaborative "Crew" of agents (Strategist, Copywriter, Critic) to transform verified knowledge into high-performance marketing assets.
 
 ---
 
 ## 🚀 Key Features
 
-### 🧠 The Strategic Brain (v1.2.1)
-- **Strategy Architect:** Automatically performs STP (Segmentation, Targeting, Positioning) analysis before drafting any content.
-- **Marketing Bible:** Injects a professional knowledge stack (AIDA, PAS, BAB, 4U frameworks) directly into the AI's cognitive core.
-- **Psychological Triggers:** Intelligently selects triggers (Authority, Scarcity, Curiosity) to maximize conversion and engagement.
+### 🎭 The Strategic Crew (v2.0.0)
+- **Collaborative Loop:** Every draft undergoes a rigorous audit by a **Zero-Tolerance 'Critic' Agent** to eliminate AI fluff and maximize viral hooks.
+- **Social Memory:** The system learns from your past successes. The **Strategist** automatically references previous published history to maintain narrative consistency.
+- **Expert Bible:** Injects a professional knowledge stack (AIDA, PAS, BAB) directly into the cognitive core.
 
-### 🎭 Multi-Persona Engine
-- **Voice Engineering:** Switch instantly between brand voices (e.g., `hype-setter` for early adopters, `tech-analyst` for senior architects).
-- **Interactive Builder:** Create custom marketing personalities via an easy-to-use CLI wizard (`persona create`).
+### 🤖 Native Agent Integration
+- **Model Context Protocol (MCP):** Stdio-based server that makes `musu-marketer` a native tool for Claude and Gemini.
+- **REST API:** Lightweight HTTP interface for integration into custom SaaS or CRM platforms.
 
-### 🤖 Autonomous Autopilot
-- **Spot-to-Draft Loop:** A zero-click pipeline that spots trends via `musu-crawl`, researches them, and drafts cross-platform campaigns into your database.
-- **Project Isolation:** Maintain separate campaigns, personas, and databases for different missions or clients.
-
-### 🌉 Product Integration
-- **REST API Server:** Integrate musu-marketer as a backend service for your own SaaS or CRM.
-- **Publisher Registry:** Pluggable architecture to add custom adapters for X, LinkedIn, Slack, or proprietary CMS.
+### ⚡ Automation & Isolation
+- **Autonomous Autopilot:** Full "Spot -> Research -> Draft" pipeline using `musu-crawl-ai`.
+- **Project Siloing:** Strictly isolated assets, identities, and databases for different missions or clients.
 
 ---
 
 ## 🛠️ Installation & Setup
 
 ### 1. Prerequisites
-- **Knowledge Base:** Requires [musu-crawl-ai](https://github.com/yellowhama/musu-crawl-ai) to provide verified data.
-- **Intelligence:** Requires [Ollama](https://ollama.com) running locally.
+- **Knowledge:** [musu-crawl-ai](https://github.com/yellowhama/musu-crawl-ai)
+- **Intelligence:** [Ollama](https://ollama.com)
 
 ### 2. Initialize
 ```bash
-./musu-marketer init --project my-brand
+./musu-marketer init --project master-brand
 ```
 
 ---
 
 ## 📖 User Manual
 
-### 1. Draft a Campaign
-Generate strategic content based on a topic in your wiki:
+### 1. Multi-Agent Drafting
+Generate strategic content with a self-correcting review loop:
 ```bash
-./musu-marketer draft "QuantumComputing" --persona tech-analyst --project alpha
+./musu-marketer draft "DeepTech" --persona tech-analyst --project alpha
 ```
 
-### 2. Manage Campaigns
-```bash
-./musu-marketer list --project alpha
-./musu-marketer view 1 --project alpha
-```
+### 2. Native Orchestration (MCP)
+Add `musu-marketer mcp` to your Claude Desktop config to use it as a native tool.
 
-### 3. Run Autopilot
-Automate trend spotting, research, and drafting in one go:
+### 3. Autopilot (Zero-Click)
 ```bash
 ./musu-marketer autopilot "MachineLearning" --project auto-agency
 ```
-
-### 4. Remote Control (API Mode)
-```bash
-./musu-marketer serve --port 8081
-```
-
----
-
-## 📂 Architecture
-- `/projects/{name}/campaigns`: Drafted campaign files.
-- `/projects/{name}/data/marketer.db`: SQLite lifecycle storage.
-- `/projects/{name}/personas`: Project-specific brand voices.
-- `INTEGRATION.md`: Developer guide for custom adapters.
 
 ---
 
 ## 📝 Roadmap
 - [x] v1.0.0: Autonomous Drafting & Database
-- [x] v1.1.0: Strategic Brain & Marketing Bible
 - [x] v1.2.1: API Server & Connection Hardening
-- [ ] v2.0.0: Visual Generation & Performance Analytics Loop
+- [x] v2.0.0: The Strategic Crew (Critic, Memory, MCP)
+- [ ] v3.0.0: Visual Generation & Analytics Feedback Loop
