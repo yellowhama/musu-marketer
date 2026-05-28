@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const Version = "v2.0.1"
+const Version = "v2.0.3"
 
 var rootCmd = &cobra.Command{
 	Use:     "musu-marketer",
