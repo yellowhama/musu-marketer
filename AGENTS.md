@@ -24,6 +24,32 @@ This tool provides **Marketing Primitives** grounded in professional strategy.
 4.  **STRATEGIZE:** Use `musu-marketer draft` to generate a high-impact campaign based on that Wiki data.
 5.  **DELIVER:** Use `musu-marketer publish` to output the final copy, or pass the campaign into `musu-nurikun` for compliant opt-in email delivery.
 
+## 🔌 MCP Server Registration
+
+The MCP server inherits its environment from the registering process. Naive `claude mcp add` registrations end up running with default-only config (`localhost:11434/v1`, default model, no wiki override) — the `draft_campaign` and `list_campaigns` MCP tools then talk to the wrong endpoint or look at an empty wiki.
+
+Register with explicit `--env` flags so the server sees the same values your shell does:
+
+```powershell
+# Windows / PowerShell
+claude mcp add -s user musu-marketer `
+  -- musu-marketer.exe mcp `
+  --env MUSU_AI_URL=http://localhost:11434/v1 `
+  --env MUSU_AI_MODEL=llama3.2:1b `
+  --env MUSU_WIKI_DIR=$env:USERPROFILE\musu-crawl-ai\wiki
+```
+
+```bash
+# Linux / macOS
+claude mcp add -s user musu-marketer \
+  -- musu-marketer mcp \
+  --env MUSU_AI_URL=http://localhost:11434/v1 \
+  --env MUSU_AI_MODEL=llama3.2:1b \
+  --env MUSU_WIKI_DIR=$HOME/musu-crawl-ai/wiki
+```
+
+Restart your Claude session after `claude mcp add` — tool schemas are read at session start. Verify by invoking `list_campaigns` and confirming it returns your real project state, not an empty default scaffold.
+
 ## 🛑 Critical Mandates for Agents
 - **Strategy First:** Always ensure a `Strategic Brief` is generated before outputting content.
 - **Bible Compliance:** Strictly follow the frameworks in the `MARKETING_BIBLE.md`.

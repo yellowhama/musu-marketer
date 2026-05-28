@@ -55,6 +55,32 @@ Core flow:
 2. verify wiki + AI readiness
 3. draft against verified source material
 
+### 3. MCP Server Registration (Claude Code CLI)
+
+The MCP server inherits its environment from the registering process. Naive `claude mcp add` registrations end up running with default-only config (`localhost:11434/v1`, default model, no wiki override) — operators then wonder why `draft_campaign` and `list_campaigns` are talking to the wrong endpoint or pointing at an empty wiki.
+
+Register with explicit `--env` flags so the server sees the same values your shell does:
+
+```powershell
+# Windows / PowerShell
+claude mcp add -s user musu-marketer `
+  -- musu-marketer.exe mcp `
+  --env MUSU_AI_URL=http://localhost:11434/v1 `
+  --env MUSU_AI_MODEL=llama3.2:1b `
+  --env MUSU_WIKI_DIR=$env:USERPROFILE\musu-crawl-ai\wiki
+```
+
+```bash
+# Linux / macOS
+claude mcp add -s user musu-marketer \
+  -- musu-marketer mcp \
+  --env MUSU_AI_URL=http://localhost:11434/v1 \
+  --env MUSU_AI_MODEL=llama3.2:1b \
+  --env MUSU_WIKI_DIR=$HOME/musu-crawl-ai/wiki
+```
+
+Restart your Claude session after `claude mcp add` — tool schemas are read at session start. Verify by calling the `list_campaigns` MCP tool and confirming it surfaces your real project, not an empty default scaffold.
+
 ---
 
 ## 📖 User Manual
