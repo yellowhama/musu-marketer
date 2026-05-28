@@ -2,6 +2,10 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
+	"path/filepath"
+
 	_ "modernc.org/sqlite"
 )
 
@@ -27,6 +31,13 @@ func (s *Store) Close() error {
 }
 
 func NewStore(dbPath string) (*Store, error) {
+	// Ensure the parent directory exists so cwd-isolated invocations (notably
+	// MCP servers) don't fail with SQLITE_CANTOPEN on a missing projects tree.
+	if dir := filepath.Dir(dbPath); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return nil, fmt.Errorf("create db dir %s: %w", dir, err)
+		}
+	}
 	db, err := sql.Open("sqlite", dbPath)
 	if err != nil { return nil, err }
 
