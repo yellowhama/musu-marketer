@@ -2,12 +2,11 @@ package preflight
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
+	corepreflight "github.com/yellowhama/musu-core/preflight"
 	"github.com/yellowhama/musu-marketer/internal/bridge"
 )
 
@@ -103,7 +102,7 @@ func EvaluateDoctor(opts DoctorOptions) DoctorResult {
 		result.Blocking = true
 	}
 
-	if err := probeModels(opts.AIURL); err != nil {
+	if err := corepreflight.Probe(opts.AIURL); err != nil {
 		result.Report.AIError = err.Error()
 		result.Blocking = true
 	} else {
@@ -155,22 +154,6 @@ func buildActionableFix(report DoctorReport) string {
 	return strings.Join(fixes, "; ") + "."
 }
 
-func probeModels(baseURL string) error {
-	baseURL = strings.TrimRight(strings.TrimSpace(baseURL), "/")
-	if baseURL == "" {
-		return fmt.Errorf("empty ai-url")
-	}
-	client := &http.Client{Timeout: 3 * time.Second}
-	resp, err := client.Get(baseURL + "/models")
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		return nil
-	}
-	return fmt.Errorf("unexpected status %s from %s/models", resp.Status, baseURL)
-}
 
 func countMarkdownFiles(root string) int {
 	count := 0
