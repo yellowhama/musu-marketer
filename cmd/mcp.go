@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -28,13 +29,26 @@ func startMCPServer() {
 
 	// Tool: Draft
 	draftTool := mcp.NewTool("draft_campaign",
-		mcp.WithDescription("Draft a strategic marketing campaign based on verified knowledge"),
+		mcp.WithDescription("Draft a strategic marketing campaign grounded in the crawl-ai wiki using the project's persona and the Strategist+Copywriter+Critic crew"),
+		mcp.WithString("topic",
+			mcp.Required(),
+			mcp.Description("Campaign topic to draft from grounded wiki sources"),
+		),
+		mcp.WithString("project",
+			mcp.Description("Project scope (default: 'default')"),
+		),
+		mcp.WithString("persona",
+			mcp.Description("Persona name under projects/<project>/personas/<name>.md (default: 'default')"),
+		),
 	)
 	s.AddTool(draftTool, handleDraft)
 
 	// Tool: List
 	listTool := mcp.NewTool("list_campaigns",
 		mcp.WithDescription("List all drafted marketing campaigns for a project"),
+		mcp.WithString("project",
+			mcp.Description("Project scope (default: 'default')"),
+		),
 	)
 	s.AddTool(listTool, handleList)
 
@@ -47,6 +61,9 @@ func startMCPServer() {
 func handleDraft(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	args := request.Params.Arguments.(map[string]interface{})
 	topic, _ := args["topic"].(string)
+	if strings.TrimSpace(topic) == "" {
+		return mcp.NewToolResultError("topic is required"), nil
+	}
 	project, ok := args["project"].(string)
 	if !ok { project = "default" }
 	persona, ok := args["persona"].(string)
