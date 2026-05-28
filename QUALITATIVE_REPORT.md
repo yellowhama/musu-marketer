@@ -23,6 +23,7 @@
 - MCP tool surface is callable from clients — parameter schemas declared (was empty, blocking arg-passing); `draft` guards empty topic
 - `db.NewStore` MkdirAll(parent) closes the SQLITE_CANTOPEN failure mode for cwd-isolated invocations
 - Docker deploy bundle brings the full ecosystem up under one compose with ollama, healthchecks, and end-to-end probe verification
+- production hardening track shipped at the operator-local layer: x-logging anchor (10MB×3 rotation per service), opt-in `tls` profile (Caddy auto-HTTPS), opt-in `scheduler` profile (ofelia sidecar), `docker-compose.production.yml` GHCR overlay, `.github/workflows/docker-publish.yml` for multi-arch (amd64+arm64) tag-triggered image publish
 
 ## Strong Points
 - clear project siloing

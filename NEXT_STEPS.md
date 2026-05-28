@@ -12,7 +12,8 @@
 
 ## P3
 - improve publish adapters beyond local/webhook
-- production hardening on the docker-compose bundle: TLS termination, log rotation, image registry push
+- ~~production hardening on the docker-compose bundle: TLS termination, log rotation, image registry push~~ — CLOSED 2026-05-28. Caddy `tls` profile (auto-HTTPS), x-logging anchor (10MB×3 rotation), `.github/workflows/docker-publish.yml` for GHCR push.
+- first real GHCR push validation — operator pushes a `vX.Y.Z` tag and confirms the workflow publishes `ghcr.io/yellowhama/musu-marketer:vX.Y.Z` + `:latest`
 
 ## Verified Integration Harness
 - set `MUSU_MARKETER_INTEGRATION_AI_URL`

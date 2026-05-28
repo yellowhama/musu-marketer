@@ -10,6 +10,7 @@
 - `cmd/publish.go`: publish adapters
 - `cmd/mcp.go`: MCP server (exposes `draft_campaign` + `list_campaigns` with declared parameter schemas)
 - `Dockerfile`: alpine runtime image (digest-pinned golang build stage); see top-level `docker-compose.yml`
+- `.github/workflows/docker-publish.yml`: tag-triggered multi-arch (amd64+arm64) GHCR publish to `ghcr.io/yellowhama/musu-marketer`
 
 ## Core Packages
 - `internal/agent`: strategist, copywriter, critic, shared AI client
