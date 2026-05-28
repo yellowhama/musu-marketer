@@ -33,6 +33,8 @@
 - [x] Topic readiness backed by index/body content
 - [x] Wiki auto-discovery for sibling `musu-crawl-ai`
 - [x] Local draft smoke coverage against a grounded wiki fixture
+- [x] Telemetry `logTrace` I/O errors are now surfaced to stderr (no silently-lost traces)
+- [x] Compiled `musu-marketer.exe` binary is no longer tracked in git
 
 ## Known Constraints
 - Topic readiness is still heuristic substring matching, not ranked retrieval.

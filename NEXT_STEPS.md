@@ -10,6 +10,7 @@
 
 ## P3
 - improve publish adapters beyond local/webhook
+- extract shared module(s) for `AgentClient` + `preflight/doctor` + env-loader to remove triple-duplicated logic across the three repos
 
 ## Verified Integration Harness
 - set `MUSU_MARKETER_INTEGRATION_AI_URL`

@@ -18,6 +18,8 @@
 - added test coverage for indexed/content topic lookup
 - `init` now writes a project-local `NEXT_STEPS.md` and returns structured bootstrap metadata in `--json`
 - embedded the Marketing Bible so draft execution stays stable outside the repo root
+- telemetry I/O errors in `internal/agent/client.go` `logTrace` are now logged to stderr instead of swallowed
+- the compiled `musu-marketer.exe` is no longer tracked in git (already in `.gitignore`; the local file is retained)
 
 ## Operator Flow
 1. `musu-marketer init --project <name>`

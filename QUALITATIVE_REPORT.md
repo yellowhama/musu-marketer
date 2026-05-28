@@ -17,6 +17,8 @@
 - the real integration path is now model-configurable through `MUSU_MARKETER_INTEGRATION_MODEL`
 - a real Ollama-backed CLI `draft` integration pass was verified with `llama3.2:1b`
 - topic lookup now ranks title/tag/summary matches ahead of weaker body-only hits
+- telemetry `logTrace` I/O errors are no longer swallowed (mkdir/write failures logged to stderr)
+- the compiled binary is no longer tracked in git, ending stale-exe drift
 
 ## Strong Points
 - clear project siloing
