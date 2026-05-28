@@ -20,6 +20,12 @@
 - embedded the Marketing Bible so draft execution stays stable outside the repo root
 - telemetry I/O errors in `internal/agent/client.go` `logTrace` are now logged to stderr instead of swallowed
 - the compiled `musu-marketer.exe` is no longer tracked in git (already in `.gitignore`; the local file is retained)
+- `internal/agent/client.go` + `internal/preflight/doctor.go` now thin wrappers over `github.com/yellowhama/musu-core@v0.1.0`
+- MCP tool parameter schemas declared for `draft_campaign` + `list_campaigns` — clients can actually pass `topic`/`project`/`persona`
+- `handleDraft` guards empty `topic` (was silently proceeding)
+- `db.NewStore` MkdirAll(parent) before sql.Open — cwd-isolated MCP invocations no longer fail with SQLITE_CANTOPEN
+- `preflight.DoctorResult` JSON envelope uses snake_case tags (consistent with inner Report)
+- Dockerfile added (alpine runtime, digest-pinned base) + brings up under top-level docker-compose alongside ollama/crawl/nurikun. End-to-end `compose up` verified healthy.
 
 ## Operator Flow
 1. `musu-marketer init --project <name>`

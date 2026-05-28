@@ -35,6 +35,12 @@
 - [x] Local draft smoke coverage against a grounded wiki fixture
 - [x] Telemetry `logTrace` I/O errors are now surfaced to stderr (no silently-lost traces)
 - [x] Compiled `musu-marketer.exe` binary is no longer tracked in git
+- [x] **Shared module integration**: `internal/agent/client.go`, `internal/preflight/doctor.go` now thin wrappers over `github.com/yellowhama/musu-core@v0.1.0`.
+- [x] **MCP tool parameter schemas declared** — `draft_campaign` / `list_campaigns` now expose `WithString`/`Required` so MCP clients can pass `topic`/`project`/`persona`.
+- [x] **`handleDraft` empty-input guard** — empty `topic` rejected with `"topic is required"` (no more silent slide into the LLM pipeline).
+- [x] **`db.NewStore` MkdirAll(parent)** — cwd-isolated invocations (MCP servers) no longer fail with SQLITE_CANTOPEN on missing project dirs.
+- [x] **`preflight.DoctorResult` JSON envelope** — snake_case `json` tags for consistency with the inner Report.
+- [x] **Docker deploy bundle** — Dockerfile (alpine, digest-pinned golang) brings up under top-level docker-compose with ollama/crawl/nurikun. End-to-end `compose up` verified healthy.
 
 ## Known Constraints
 - Topic readiness is still heuristic substring matching, not ranked retrieval.

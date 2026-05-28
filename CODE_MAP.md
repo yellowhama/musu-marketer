@@ -8,6 +8,8 @@
 - `cmd/draft.go`: main draft command
 - `cmd/autopilot.go`: higher-level orchestration flow
 - `cmd/publish.go`: publish adapters
+- `cmd/mcp.go`: MCP server (exposes `draft_campaign` + `list_campaigns` with declared parameter schemas)
+- `Dockerfile`: alpine runtime image (digest-pinned golang build stage); see top-level `docker-compose.yml`
 
 ## Core Packages
 - `internal/agent`: strategist, copywriter, critic, shared AI client

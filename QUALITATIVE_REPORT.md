@@ -19,6 +19,10 @@
 - topic lookup now ranks title/tag/summary matches ahead of weaker body-only hits
 - telemetry `logTrace` I/O errors are no longer swallowed (mkdir/write failures logged to stderr)
 - the compiled binary is no longer tracked in git, ending stale-exe drift
+- triple-duplicated AgentClient + preflight Probe scaffolding consolidated into `github.com/yellowhama/musu-core@v0.1.0`; internal/agent + internal/preflight are now thin wrappers
+- MCP tool surface is callable from clients — parameter schemas declared (was empty, blocking arg-passing); `draft` guards empty topic
+- `db.NewStore` MkdirAll(parent) closes the SQLITE_CANTOPEN failure mode for cwd-isolated invocations
+- Docker deploy bundle brings the full ecosystem up under one compose with ollama, healthchecks, and end-to-end probe verification
 
 ## Strong Points
 - clear project siloing
@@ -32,9 +36,10 @@
 - publish adapters are still shallow beyond local/webhook
 
 ## Thermo Verdict
-`PASS WITH CONCERNS`
+`PASS` (no [CRITICAL]/[HIGH]/[MEDIUM]/[LOW] open, as of 2026-05-28 audit — see `C:\Users\empty\MUSU_THERMONUCLEAR_REVIEW_2026-05-28.md`)
 
 ## Immediate Priorities
 1. decide whether topic retrieval should stay lexical or graduate to semantic/vector retrieval
 2. grow the wiki fixture into a richer multi-topic sample corpus
 3. improve publish adapters beyond local/webhook
+4. (production hardening on the docker-compose bundle: TLS termination, log rotation, image registry push)
